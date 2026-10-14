@@ -50,6 +50,7 @@
 - [The Rise of Answer Engines](https://moz.com/blog/answer-engine-optimization) - Moz 关于答案引擎优化的深度分析。
 - [Optimizing Content for ChatGPT and AI Assistants](https://ahrefs.com/blog/ai-seo/) - Ahrefs 的 AI 内容优化策略。
 - [How to Optimize for Google AI Overviews 2026](https://becomingseo.com/insights/aeo-geo/optimize-for-google-ai-overviews/) - 2026 年 Google AI 概述优化完整指南。
+- [Why AI Assistants Pass Over HVAC Contractors](https://pickedbyagents.com/reports/why-ai-passes-hvac-contractors) - 数据研究：AI 助手在推荐本地暖通（HVAC）服务商时淘汰候选商家的理由，附覆盖 2,383 个城市推荐结果与理由的[开放数据集](https://github.com/gregm711/ai-assistant-hvac-picks)。
 
 ### 视频教程
 
@@ -95,6 +96,7 @@
 | **NeuronWriter**    | 基于 NLP 的内容优化                                                                  | [neuronwriter.com](https://neuronwriter.com)     |
 | **Writesonic**      | 具有 AEO 功能的 AI 内容生成平台                                                          | [writesonic.com](https://writesonic.com)         |
 | **Answer Socrates** | 最适合 GEO 关键词发现                                                                 | [answersocrates.com](https://answersocrates.com) |
+| **geo-check**       | 开源命令行工具，基于 robots.txt、sitemap、llms.txt 和抽样页面为网站的 AI 爬虫可访问性与可读性打分，评分过程不依赖 LLM | [github.com/vasco-branco06/geo-check](https://github.com/vasco-branco06/geo-check) |
 
 ### 品牌监测
 
@@ -124,6 +126,7 @@
 | **BrightEdge AI Search**      | 跨 Google AI Overviews 和 Bing Copilot 追踪 AI 搜索可见度的企业平台 | [brightedge.com](https://www.brightedge.com)           |
 | **seoClarity**                | 带有 GEO 分析模块的 AI 驱动企业内容优化平台                            | [seoclarity.net](https://www.seoclarity.net)           |
 | **Botify**                    | 具有 AI 搜索就绪度评分和爬虫优化的企业 SEO 平台                          | [botify.com](https://www.botify.com)                   |
+| **auto-geo**                  | 开源命令行工具，审计页面的 AI 引用就绪度，并测量 ChatGPT、Claude、Gemini、Perplexity 和 Grok 是否引用某个域名 | [github.com/shadowresearch/auto-geo](https://github.com/shadowresearch/auto-geo) |
 
 
 ## AI 搜索引擎
