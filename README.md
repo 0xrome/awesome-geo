@@ -15,6 +15,7 @@
 - [Analytics & Monitoring](#analytics--monitoring)
 - [Case Studies](#case-studies)
 - [Communities & Forums](#communities--forums)
+- [Official Platform News](#official-platform-news)
 - [News & Trends](#news--trends)
 - [Books](#books)
 - [GEO Checklist](#geo-checklist)
@@ -33,6 +34,10 @@
 - [BRIGHT: A Realistic and Challenging Benchmark for Reasoning-Intensive Retrieval](https://arxiv.org/abs/2407.12883) - Benchmark for evaluating retrieval in reasoning-heavy AI search scenarios.
 - [Search-o1: Agentic Search-Enhanced LLM Reasoning](https://arxiv.org/abs/2501.05366) - Framework combining agentic RAG with LLM reasoning for complex search tasks.
 - [Is ChatGPT Good at Search?](https://arxiv.org/abs/2304.09542) - Empirical evaluation of ChatGPT's search quality, providing insights into optimizing for conversational AI.
+- [Think Before Writing: Feature-Level Multi-Objective Optimization for Generative Citation Visibility](https://aclanthology.org/2026.acl-long.929/) - ACL 2026 paper (FeatGEO) that optimizes interpretable structural, content, and linguistic features instead of rewriting tokens, finding that citation depends more on document-level properties than on isolated wording.
+- [GEO-Bench: Benchmarking Ranking Manipulation in Generative Engine Optimization](https://arxiv.org/abs/2605.29107) - May 2026 benchmark comparing black-box, white-box, and white-hat GEO strategies under one protocol, scoring both effectiveness and stealth.
+- [Beyond the Vacuum: Combinatorial Strategy Selection for Competitor-Aware Generative Engine Optimization](https://arxiv.org/abs/2608.27631) - August 2026 paper showing that optimal rewriting strategies shift as competitors also optimize.
+- [Agent2UCB: Agentic System for Generative Engine Optimization](https://arxiv.org/abs/2608.29063) - August 2026 agentic GEO system that picks among nine strategies with a bandit policy while checking SEO quality and E-E-A-T-style credibility.
 
 ### Articles & Guides
 
@@ -140,8 +145,9 @@
 
 | Platform                | Description                                  | Link                                         |
 | ----------------------- | -------------------------------------------- | -------------------------------------------- |
-| **Google AI Overviews** | AI-generated summaries in Google Search      | [google.com](https://google.com)             |
-| **Bing Chat**           | Bing search integrated with GPT-4            | [bing.com](https://bing.com)                 |
+| **Google AI Overviews & AI Mode** | AI summaries and conversational search in Google Search; AI Mode passed 1B monthly users in 2026 | [google.com](https://google.com) |
+| **Bing (Copilot)**      | AI-generated summaries in Bing and Microsoft Copilot answers | [bing.com](https://bing.com) |
+| **Perplexity Comet**    | Perplexity's AI browser, free worldwide      | [perplexity.ai/comet](https://www.perplexity.ai/comet) |
 | **You.com**             | AI-first search engine                       | [you.com](https://you.com)                   |
 | **Kagi**                | Paid ad-free search engine with AI summaries | [kagi.com](https://kagi.com)                 |
 | **Brave Search**        | Privacy-first search engine with AI features | [search.brave.com](https://search.brave.com) |
@@ -257,29 +263,52 @@ The FAST framework helps teams assess their AI crawler readiness:
 - [ ] Ensure mobile-friendliness
 - [ ] Use semantic HTML
 - [ ] Create XML sitemap
-- [ ] Configure robots.txt to allow AI crawlers
-- [ ] Create llms.txt for structured AI-readable site information
+- [ ] Configure robots.txt to allow AI search crawlers
+- [ ] Check that your CDN / bot protection doesn't block AI crawlers' published IP ranges
+- [ ] Verify the site in Google Search Console and Bing Webmaster Tools
+- [ ] (Optional) Create llms.txt for structured AI-readable site information
 - [ ] Implement HTTPS
 - [ ] Optimize image alt text
 - [ ] Ensure server-side rendering for AI crawler accessibility
 
 #### AI Crawler Configuration
 
-```robots.txt
-# Allow major AI search crawlers (affect real-time AI responses)
-User-agent: GPTBot
-Allow: /
+> Sources: [OpenAI crawlers](https://developers.openai.com/api/docs/bots), [Anthropic crawlers](https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler), [Perplexity crawlers](https://docs.perplexity.ai/docs/resources/perplexity-crawlers), [Google AI features](https://developers.google.com/search/docs/appearance/ai-features)
 
+Each AI company separates **search crawlers** (needed to be cited in AI answers) from **training crawlers** (only affect future model training). Blocking a training crawler does not remove you from AI search, and vice versa.
+
+```robots.txt
+# --- Search / retrieval crawlers: required to be cited in AI answers ---
+
+# OpenAI: ChatGPT search
 User-agent: OAI-SearchBot
 Allow: /
 
-User-agent: ChatGPT-User
+# Anthropic: Claude search index
+User-agent: Claude-SearchBot
+Allow: /
+
+# Anthropic: fetches pages when a Claude user asks a question
+User-agent: Claude-User
+Allow: /
+
+# Perplexity: Perplexity search results
+User-agent: PerplexityBot
+Allow: /
+
+# Google AI Overviews / AI Mode and Bing Copilot use the normal search crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# --- Training crawlers: allow or block according to your content policy ---
+
+User-agent: GPTBot
 Allow: /
 
 User-agent: ClaudeBot
-Allow: /
-
-User-agent: PerplexityBot
 Allow: /
 
 User-agent: Google-Extended
@@ -288,20 +317,25 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
-# Allow AI training crawlers (affect future model training)
 User-agent: CCBot
-Allow: /
-
-User-agent: anthropic-ai
 Allow: /
 
 User-agent: Bytespider
 Allow: /
 ```
 
+Notes from the official documentation:
+
+- `ChatGPT-User` and `Perplexity-User` fetch pages on a user's request, and both vendors say robots.txt may not apply to them. Enforce hard blocks at the firewall using their published IP lists.
+- `Google-Extended` does **not** control AI Overviews or AI Mode. To opt out of those, use the Search generative AI control in Search Console, or `nosnippet` / `max-snippet` / `noindex`.
+- Robots.txt changes take about 24 hours to apply for OpenAI and Perplexity.
+- Anthropic requires the rules on every subdomain and supports `Crawl-delay`.
+
 #### llms.txt Configuration
 
-[llms.txt](https://llmstxt.org/) is an emerging standard (similar to robots.txt) that provides AI models with structured, machine-readable information about your website. Sites with proper llms.txt see ~24% more accurate brand descriptions in AI responses.
+[llms.txt](https://llmstxt.org/) is a proposed standard (similar to robots.txt) that provides AI models with structured, machine-readable information about your website.
+
+> Adoption by AI platforms is limited. [Google states](https://developers.google.com/search/docs/appearance/ai-features) that you don't need llms.txt, AI text files, or special schema.org markup to appear in AI Overviews or AI Mode. Treat llms.txt as optional.
 
 ```markdown
 # Your Brand Name
@@ -362,7 +396,7 @@ A product feed is a structured file listing product details that may help AI sys
 | ------------- | ------------------------------------------------------------------------------ | ------------------------------------------------ |
 | **Google**    | [Google Merchant Center](https://business.google.com/us/merchant-center/)      | Active - powers Google AI Mode product citations |
 | **Microsoft** | [Microsoft Merchant Center](https://help.ads.microsoft.com/#apex/3/en/51085/1) | Active - powers Copilot product results          |
-| **ChatGPT**   | [Register interest](https://openai.com/chatgpt/search-product-discovery/)      | Coming soon - feed submissions not yet open      |
+| **ChatGPT**   | [Agentic Commerce Protocol product feed](https://developers.openai.com/commerce/guides/get-started) | Active for approved merchants in the U.S.; Shopify and Etsy catalogs are integrated automatically |
 
 #### 3-Step AI Search Readiness Plan
 
@@ -457,6 +491,16 @@ Key findings: Reddit, YouTube, and Facebook appear in **68%+** of AI Mode result
 | Claude      | 136.6M         | 2.23%         |
 | Copilot     | 97.8M          | 1.60%         |
 | Meta AI     | 16.6M          | 0.27%         |
+
+### Official Measurement Tools
+
+First-party reports are the most reliable source of AI search visibility data:
+
+| Tool | What it reports | Limitations |
+|------|-----------------|-------------|
+| [Google Search Console: Generative AI performance report](https://support.google.com/webmasters/answer/16908024) | Impressions in AI Overviews, AI Mode, and Discover by page, country, device, and date; available worldwide since August 2026 | No click or query data |
+| [Bing Webmaster Tools: AI Performance](https://www.bing.com/webmasters/help/ai-performance-9f8e7d6c) | Citations in Copilot, Bing AI summaries, and partner integrations; cited pages; grounding queries | Public preview; no clicks; not in the API yet |
+| [ChatGPT referral tracking](https://help.openai.com/en/articles/12627856-publishers-and-developers-faq) | ChatGPT search adds `utm_source=chatgpt.com` to referral links | Only counts clicks, not citations |
 
 ### AI Traffic Tracking Setup (GA4)
 
@@ -553,6 +597,45 @@ B2B brands report **6X-27X higher conversion rates** from AI search platforms vs
 - [GEO Community on Discord](https://discord.gg/geo-optimization) - Active Discord server dedicated to GEO strategies.
 
 
+## Official Platform News
+
+> First-party announcements and documentation from AI search platforms. When third-party advice conflicts with these, trust the official source.
+
+### Google
+
+- [Search generative AI control](https://support.google.com/webmasters/answer/16908024) - August 2026: rolled out to all sites in Search Console. Lets site owners include or exclude a property from AI Overviews, AI Mode, and generative AI in Discover; opting out is not a ranking signal for regular Search and does not control model training.
+- [Generative AI performance report goes global](https://searchengineland.com/google-search-console-ai-performance-reports-and-search-generative-ai-control-rolling-out-globally-486269) - August 2026: Search Console reports AI-feature impressions by page, country, device, and date, without clicks or queries.
+- [Google Search's I/O 2026 updates](https://blog.google/products-and-platforms/products/search/search-io-2026/) - May 2026: Gemini 3.5 Flash becomes the default AI Mode model, a new AI-powered Search box, Search agents, and AI Mode passing one billion monthly users.
+- [How AI Mode is changing the way people search in the U.S.](https://blog.google/products-and-platforms/products/search/ai-mode-us-insights/) - May 2026: AI Mode queries are three times longer than traditional searches, and over one in six U.S. searches use voice or images.
+- [5 new ways to explore the web with generative AI in Search](https://blog.google/products-and-platforms/products/search/explore-web-generative-ai-search/) - May 2026: more prominent links, inline site previews, highlighted subscription sources, and query fan-out.
+- [AI Mode in Chrome](https://blog.google/products-and-platforms/products/search/ai-mode-chrome/) - April 2026: links open side-by-side with AI Mode, and open tabs, images, and PDFs can be added as search context.
+- [AI features and your website](https://developers.google.com/search/docs/appearance/ai-features) - Official docs: pages only need to be indexed and snippet-eligible; no special markup, schema, or llms.txt is required.
+- [Guide to optimizing for generative AI features](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) - Official best practices, including a warning against third-party tools that claim access to Google's internal metrics.
+
+### Microsoft Bing
+
+- [AI Performance in Bing Webmaster Tools](https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview) - February 2026: public preview of the first first-party AI citation report, covering Copilot, Bing AI summaries, and partner integrations.
+- [AI Performance help](https://www.bing.com/webmasters/help/ai-performance-9f8e7d6c) - Official metric definitions; citations do not indicate ranking or placement within an answer.
+
+### OpenAI (ChatGPT)
+
+- [Overview of OpenAI crawlers](https://developers.openai.com/api/docs/bots) - Official docs: `OAI-SearchBot` (search), `GPTBot` (training), and `ChatGPT-User` (user-triggered) are controlled independently; sites that block OAI-SearchBot won't appear in ChatGPT search answers.
+- [Publishers and Developers FAQ](https://help.openai.com/en/articles/12627856-publishers-and-developers-faq) - Official docs: any public site can appear in ChatGPT search, and referrals carry `utm_source=chatgpt.com`.
+- [Powering product discovery in ChatGPT](https://openai.com/index/powering-product-discovery-in-chatgpt/) - The Agentic Commerce Protocol now centers on product feeds, and OpenAI is moving from Instant Checkout to merchant-owned checkout.
+- [Advertiser guidance for OpenAI crawlers](https://help.openai.com/en/articles/20001243-advertiser-guidance-for-allowing-openai-web-crawlers) - `OAI-AdsBot` must be allowed for ChatGPT Ads landing pages.
+- [Introducing ChatGPT Atlas](https://openai.com/index/introducing-chatgpt-atlas/) - October 2025: OpenAI's AI browser launched; it has since been [retired](https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement).
+
+### Perplexity
+
+- [Perplexity crawlers](https://docs.perplexity.ai/docs/resources/perplexity-crawlers) - Official docs: `PerplexityBot` powers Perplexity search and is not used for training; `Perplexity-User` fetches pages on user request and generally ignores robots.txt.
+- [Introducing Comet Plus](https://www.perplexity.ai/hub/blog/introducing-comet-plus) - August 2025: publisher compensation based on human visits, search citations, and agent actions; [Axios reported](https://www.axios.com/2025/08/26/perplexity-comet-plus-subscription) an 80% revenue share for publishers.
+- [Comet is now available to everyone](https://www.perplexity.ai/hub/blog/comet-is-now-available-to-everyone-worldwide) - Perplexity's AI browser became free worldwide, alongside the first Comet Plus publisher partners.
+
+### Anthropic (Claude)
+
+- [Anthropic's crawlers](https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler) - Official docs: `ClaudeBot` (training), `Claude-SearchBot` (search indexing), and `Claude-User` (user-directed fetching) all honor robots.txt; blocking the search bots may reduce visibility in Claude.
+
+
 ## News & Trends
 
 - [Search Engine Land](https://searchengineland.com/) - Search Marketing News.
@@ -607,8 +690,9 @@ B2B brands report **6X-27X higher conversion rates** from AI search platforms vs
 
 - [ ] Is page load speed optimized?
 - [ ] Is mobile experience good?
-- [ ] Does robots.txt allow AI crawlers?
-- [ ] Is llms.txt configured with accurate site information?
+- [ ] Does robots.txt allow AI search crawlers (OAI-SearchBot, Claude-SearchBot, PerplexityBot)?
+- [ ] Is the Search generative AI control in Search Console set as intended?
+- [ ] (Optional) Is llms.txt configured with accurate site information?
 - [ ] Is structured data correctly implemented?
 - [ ] Does the website use HTTPS?
 - [ ] Is server-side rendering enabled for AI crawlers?
@@ -616,6 +700,7 @@ B2B brands report **6X-27X higher conversion rates** from AI search platforms vs
 ### Post-Publishing Monitoring
 
 - [ ] Is AI citation monitoring set up?
+- [ ] Are the Search Console and Bing Webmaster Tools AI reports reviewed regularly?
 - [ ] Are brand mentions tracked?
 - [ ] Is content updated regularly?
 - [ ] Is AI citation accuracy analyzed?

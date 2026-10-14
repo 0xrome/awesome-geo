@@ -15,6 +15,7 @@
 - [分析与监测](#分析与监测)
 - [案例研究](#案例研究)
 - [社区与论坛](#社区与论坛)
+- [官方平台动态](#官方平台动态)
 - [新闻与趋势](#新闻与趋势)
 - [书籍](#书籍)
 - [GEO 检查清单](#geo-检查清单)
@@ -33,6 +34,10 @@
 - [BRIGHT: A Realistic and Challenging Benchmark for Reasoning-Intensive Retrieval](https://arxiv.org/abs/2407.12883) - 评估推理密集型 AI 搜索场景中检索能力的基准测试。
 - [Search-o1: Agentic Search-Enhanced LLM Reasoning](https://arxiv.org/abs/2501.05366) - 结合智能体 RAG 与 LLM 推理的复杂搜索任务框架。
 - [Is ChatGPT Good at Search?](https://arxiv.org/abs/2304.09542) - ChatGPT 搜索质量的实证评估，为对话式 AI 优化提供洞察。
+- [Think Before Writing: Feature-Level Multi-Objective Optimization for Generative Citation Visibility](https://aclanthology.org/2026.acl-long.929/) - ACL 2026 论文（FeatGEO），在可解释的结构、内容和语言特征层面做优化，而不是逐词改写；发现引用行为更取决于文档整体属性，而非局部措辞。
+- [GEO-Bench: Benchmarking Ranking Manipulation in Generative Engine Optimization](https://arxiv.org/abs/2605.29107) - 2026 年 5 月的基准测试，在统一协议下比较黑盒、白盒和白帽 GEO 策略，同时评估效果和隐蔽性。
+- [Beyond the Vacuum: Combinatorial Strategy Selection for Competitor-Aware Generative Engine Optimization](https://arxiv.org/abs/2608.27631) - 2026 年 8 月论文，指出当竞争对手也在优化时，最优改写策略会随之变化。
+- [Agent2UCB: Agentic System for Generative Engine Optimization](https://arxiv.org/abs/2608.29063) - 2026 年 8 月的智能体 GEO 系统，用 bandit 策略在 9 种 GEO 方法中选优，同时检查 SEO 质量和 E-E-A-T 可信度。
 
 ### 文章与指南
 
@@ -139,8 +144,9 @@
 
 | 平台                      | 描述                  | 链接                                           |
 | ----------------------- | ------------------- | -------------------------------------------- |
-| **Google AI Overviews** | Google 搜索中的 AI 生成摘要 | [google.com](https://google.com)             |
-| **Bing Chat**           | 集成 GPT-4 的 Bing 搜索  | [bing.com](https://bing.com)                 |
+| **Google AI Overviews & AI Mode** | Google 搜索内的 AI 摘要和对话式搜索；AI Mode 在 2026 年月活突破 10 亿 | [google.com](https://google.com) |
+| **Bing (Copilot)**      | Bing 中的 AI 生成摘要及 Microsoft Copilot 回答 | [bing.com](https://bing.com) |
+| **Perplexity Comet**    | Perplexity 的 AI 浏览器，全球免费 | [perplexity.ai/comet](https://www.perplexity.ai/comet) |
 | **You.com**             | AI 优先的搜索引擎          | [you.com](https://you.com)                   |
 | **Kagi**                | 付费无广告搜索引擎，支持 AI 摘要  | [kagi.com](https://kagi.com)                 |
 | **Brave Search**        | 隐私优先的搜索引擎，带 AI 功能   | [search.brave.com](https://search.brave.com) |
@@ -256,29 +262,52 @@ FAST 框架帮助团队快速评估 AI 爬虫就绪度：
 - [ ] 确保移动端友好
 - [ ] 使用语义化 HTML
 - [ ] 创建 XML 站点地图
-- [ ] 配置 robots.txt 允许 AI 爬虫
-- [ ] 创建 llms.txt 提供结构化的 AI 可读网站信息
+- [ ] 配置 robots.txt 允许 AI 搜索爬虫
+- [ ] 确认 CDN / 防爬虫规则没有拦截 AI 爬虫公布的 IP 段
+- [ ] 在 Google Search Console 和 Bing Webmaster Tools 中验证网站
+- [ ]（可选）创建 llms.txt 提供结构化的 AI 可读网站信息
 - [ ] 实施 HTTPS
 - [ ] 优化图片 alt 文本
 - [ ] 确保服务端渲染以提高 AI 爬虫可访问性
 
 #### AI 爬虫配置
 
-```robots.txt
-# 允许主要 AI 搜索爬虫（影响实时 AI 响应）
-User-agent: GPTBot
-Allow: /
+> 来源：[OpenAI 爬虫](https://developers.openai.com/api/docs/bots)、[Anthropic 爬虫](https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler)、[Perplexity 爬虫](https://docs.perplexity.ai/docs/resources/perplexity-crawlers)、[Google AI 功能](https://developers.google.com/search/docs/appearance/ai-features)
 
+各家 AI 公司都把**搜索爬虫**（决定能否在 AI 回答中被引用）和**训练爬虫**（只影响未来的模型训练）分开管理。屏蔽训练爬虫不会让你从 AI 搜索中消失，反之亦然。
+
+```robots.txt
+# --- 搜索 / 检索爬虫：想在 AI 回答中被引用就必须放行 ---
+
+# OpenAI：ChatGPT 搜索
 User-agent: OAI-SearchBot
 Allow: /
 
-User-agent: ChatGPT-User
+# Anthropic：Claude 搜索索引
+User-agent: Claude-SearchBot
+Allow: /
+
+# Anthropic：Claude 用户提问时抓取页面
+User-agent: Claude-User
+Allow: /
+
+# Perplexity：Perplexity 搜索结果
+User-agent: PerplexityBot
+Allow: /
+
+# Google AI Overviews / AI Mode 和 Bing Copilot 使用常规搜索爬虫
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# --- 训练爬虫：根据你的内容政策决定放行或屏蔽 ---
+
+User-agent: GPTBot
 Allow: /
 
 User-agent: ClaudeBot
-Allow: /
-
-User-agent: PerplexityBot
 Allow: /
 
 User-agent: Google-Extended
@@ -287,20 +316,25 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
-# 允许 AI 训练爬虫（影响未来模型训练）
 User-agent: CCBot
-Allow: /
-
-User-agent: anthropic-ai
 Allow: /
 
 User-agent: Bytespider
 Allow: /
 ```
 
+官方文档中的注意事项：
+
+- `ChatGPT-User` 和 `Perplexity-User` 按用户请求抓取页面，两家都表示 robots.txt 可能对它们不生效；如需强制屏蔽，请在防火墙层面按其公布的 IP 列表处理。
+- `Google-Extended` **不能**控制 AI Overviews 或 AI Mode。要退出这些功能，请使用 Search Console 中的 Search generative AI control，或 `nosnippet` / `max-snippet` / `noindex`。
+- OpenAI 和 Perplexity 的 robots.txt 修改约需 24 小时生效。
+- Anthropic 要求每个子域名单独配置规则，并支持 `Crawl-delay`。
+
 #### llms.txt 配置
 
-[llms.txt](https://llmstxt.org/) 是一个新兴标准（类似 robots.txt），为 AI 模型提供结构化的、机器可读的网站信息。正确实施 llms.txt 的网站在 AI 响应中的品牌描述准确度提高约 24%。
+[llms.txt](https://llmstxt.org/) 是一个提议中的标准（类似 robots.txt），为 AI 模型提供结构化的、机器可读的网站信息。
+
+> 目前 AI 平台对它的支持有限。[Google 明确表示](https://developers.google.com/search/docs/appearance/ai-features)，出现在 AI Overviews 或 AI Mode 中不需要 llms.txt、AI 文本文件或特殊的 schema.org 标记。建议把 llms.txt 视为可选项。
 
 ```markdown
 # 你的品牌名称
@@ -361,7 +395,7 @@ Allow: /
 | ------------- | ------------------------------------------------------------------------------ | ---------------------------- |
 | **Google**    | [Google Merchant Center](https://business.google.com/us/merchant-center/)      | 已开放 - 支持 Google AI Mode 产品引用 |
 | **Microsoft** | [Microsoft Merchant Center](https://help.ads.microsoft.com/#apex/3/en/51085/1) | 已开放 - 支持 Copilot 产品结果        |
-| **ChatGPT**   | [登记兴趣](https://openai.com/chatgpt/search-product-discovery/)                   | 即将推出 - 尚未开放信息流提交             |
+| **ChatGPT**   | [Agentic Commerce Protocol 商品信息流](https://developers.openai.com/commerce/guides/get-started) | 已面向美国获批商家开放；Shopify 和 Etsy 商品目录自动接入 |
 
 #### 3 步 AI 搜索就绪计划
 
@@ -456,6 +490,16 @@ AI 品牌提及是 AI 生成响应中对品牌的引用。LLM 在 **26-39%** 的
 | Claude     | 1.37 亿 | 2.23%  |
 | Copilot    | 9780 万 | 1.60%  |
 | Meta AI    | 1660 万 | 0.27%  |
+
+### 官方衡量工具
+
+平台自有的报告是衡量 AI 搜索可见度最可靠的数据来源：
+
+| 工具 | 报告内容 | 局限 |
+|------|----------|------|
+| [Google Search Console：生成式 AI 效果报告](https://support.google.com/webmasters/answer/16908024) | AI Overviews、AI Mode 和 Discover 中的展示次数，可按页面、国家、设备、日期查看；2026 年 8 月起全球可用 | 暂无点击和查询数据 |
+| [Bing Webmaster Tools：AI Performance](https://www.bing.com/webmasters/help/ai-performance-9f8e7d6c) | 在 Copilot、Bing AI 摘要及合作方产品中的引用次数、被引页面、grounding 查询 | 公开预览版；无点击数据；尚未开放 API |
+| [ChatGPT 来源追踪](https://help.openai.com/en/articles/12627856-publishers-and-developers-faq) | ChatGPT 搜索的外链会带上 `utm_source=chatgpt.com` | 只统计点击，不统计引用 |
 
 ### AI 流量追踪设置（GA4）
 
@@ -552,6 +596,45 @@ B2B 品牌报告显示，来自 AI 搜索平台的转化率比传统搜索高 **
 - [GEO Community on Discord](https://discord.gg/geo-optimization) - 专注 GEO 策略的活跃 Discord 服务器。
 
 
+## 官方平台动态
+
+> 来自各 AI 搜索平台的一手公告和官方文档。当第三方建议与官方说法冲突时，以官方为准。
+
+### Google
+
+- [Search generative AI control](https://support.google.com/webmasters/answer/16908024) - 2026 年 8 月：向 Search Console 所有网站开放。站长可选择让网站参与或退出 AI Overviews、AI Mode 和 Discover 中的生成式 AI 功能；退出不会影响常规搜索排名，也不控制模型训练。
+- [生成式 AI 效果报告全球上线](https://searchengineland.com/google-search-console-ai-performance-reports-and-search-generative-ai-control-rolling-out-globally-486269) - 2026 年 8 月：Search Console 可按页面、国家、设备、日期查看 AI 功能中的展示次数，暂无点击和查询数据。
+- [Google 搜索 I/O 2026 更新](https://blog.google/products-and-platforms/products/search/search-io-2026/) - 2026 年 5 月：Gemini 3.5 Flash 成为 AI Mode 默认模型，推出全新 AI 搜索框和 Search agents，AI Mode 月活突破 10 亿。
+- [AI Mode 如何改变美国用户的搜索方式](https://blog.google/products-and-platforms/products/search/ai-mode-us-insights/) - 2026 年 5 月：AI Mode 查询平均长度是传统搜索的 3 倍，美国超过六分之一的搜索使用语音或图片。
+- [生成式 AI 搜索中探索网页的 5 种新方式](https://blog.google/products-and-platforms/products/search/explore-web-generative-ai-search/) - 2026 年 5 月：链接展示更突出、内联网站预览、突出用户订阅的来源，并通过 query fan-out 挖掘更多相关网站。
+- [Chrome 中的 AI Mode](https://blog.google/products-and-platforms/products/search/ai-mode-chrome/) - 2026 年 4 月：点击链接后网页与 AI Mode 并排打开，可把标签页、图片和 PDF 加入搜索上下文。
+- [AI features and your website](https://developers.google.com/search/docs/appearance/ai-features) - 官方文档：页面只需被索引且可显示摘要；不需要特殊标记、schema 或 llms.txt。
+- [生成式 AI 功能优化指南](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide) - 官方最佳实践，并提醒警惕声称能获取 Google 内部数据的第三方工具。
+
+### Microsoft Bing
+
+- [Bing Webmaster Tools 推出 AI Performance](https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview) - 2026 年 2 月：首个平台官方的 AI 引用报告（公开预览），覆盖 Copilot、Bing AI 摘要及合作方产品。
+- [AI Performance 帮助文档](https://www.bing.com/webmasters/help/ai-performance-9f8e7d6c) - 官方指标定义；引用次数不代表排名或在回答中的位置。
+
+### OpenAI (ChatGPT)
+
+- [OpenAI 爬虫概览](https://developers.openai.com/api/docs/bots) - 官方文档：`OAI-SearchBot`（搜索）、`GPTBot`（训练）、`ChatGPT-User`（用户触发）分别独立控制；屏蔽 OAI-SearchBot 的网站不会出现在 ChatGPT 搜索回答中。
+- [发布者与开发者 FAQ](https://help.openai.com/en/articles/12627856-publishers-and-developers-faq) - 官方文档：任何公开网站都可以出现在 ChatGPT 搜索中，来自 ChatGPT 的访问会带上 `utm_source=chatgpt.com`。
+- [ChatGPT 中的商品发现](https://openai.com/index/powering-product-discovery-in-chatgpt/) - Agentic Commerce Protocol 现以商品信息流为核心，OpenAI 正从 Instant Checkout 转向商家自有结账流程。
+- [广告主爬虫放行指南](https://help.openai.com/en/articles/20001243-advertiser-guidance-for-allowing-openai-web-crawlers) - ChatGPT 广告落地页必须放行 `OAI-AdsBot`。
+- [Introducing ChatGPT Atlas](https://openai.com/index/introducing-chatgpt-atlas/) - 2025 年 10 月：OpenAI 的 AI 浏览器发布，现已[停止服务](https://help.openai.com/en/articles/20001371-chatgpt-atlas-retirement)。
+
+### Perplexity
+
+- [Perplexity 爬虫](https://docs.perplexity.ai/docs/resources/perplexity-crawlers) - 官方文档：`PerplexityBot` 用于 Perplexity 搜索，不用于训练；`Perplexity-User` 按用户请求抓取页面，通常不遵守 robots.txt。
+- [Introducing Comet Plus](https://www.perplexity.ai/hub/blog/introducing-comet-plus) - 2025 年 8 月：按人类访问、搜索引用和智能体操作向发布者分成；[据 Axios 报道](https://www.axios.com/2025/08/26/perplexity-comet-plus-subscription)发布者可获得 80% 收入分成。
+- [Comet 向所有人开放](https://www.perplexity.ai/hub/blog/comet-is-now-available-to-everyone-worldwide) - Perplexity 的 AI 浏览器全球免费，同时公布首批 Comet Plus 合作发布者。
+
+### Anthropic (Claude)
+
+- [Anthropic 爬虫说明](https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler) - 官方文档：`ClaudeBot`（训练）、`Claude-SearchBot`（搜索索引）、`Claude-User`（用户触发抓取）都遵守 robots.txt；屏蔽搜索类爬虫可能降低在 Claude 中的可见度。
+
+
 ## 新闻与趋势
 
 - [Search Engine Land](https://searchengineland.com/) - 搜索营销新闻。
@@ -606,7 +689,8 @@ B2B 品牌报告显示，来自 AI 搜索平台的转化率比传统搜索高 **
 
 - [ ] 页面加载速度是否优化？
 - [ ] 移动端体验是否良好？
-- [ ] robots.txt 是否允许 AI 爬虫？
+- [ ] robots.txt 是否放行 AI 搜索爬虫（OAI-SearchBot、Claude-SearchBot、PerplexityBot）？
+- [ ] Search Console 中的 Search generative AI control 是否按预期设置？
 - [ ] llms.txt 是否配置了准确的网站信息？
 - [ ] 结构化数据是否正确实施？
 - [ ] 网站是否使用 HTTPS？
@@ -615,6 +699,7 @@ B2B 品牌报告显示，来自 AI 搜索平台的转化率比传统搜索高 **
 ### 发布后监测
 
 - [ ] 是否设置了 AI 引用监测？
+- [ ] 是否定期查看 Search Console 和 Bing Webmaster Tools 的 AI 报告？
 - [ ] 是否跟踪品牌提及？
 - [ ] 是否定期更新内容？
 - [ ] 是否分析 AI 引用的准确性？
